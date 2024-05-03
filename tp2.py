@@ -35,13 +35,11 @@ def estadisticos(continuas, discretas):
             valores.append("Estimación de Tau: " + str(tau))
             if tau == 1:
                 distribuciones.append("Poisson")
-                distribuciones.append("Triangular")
             elif tau < 1:
                 distribuciones.append("Binomial") 
-                distribuciones.append("Triangular")
             elif tau > 1:
                 distribuciones.append("Binomial negativa")
-                distribuciones.append("Triangular")
+               
         else:
             desv_estand = np.std(muestra)
             mediaa = np.mean(muestra)
