@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import stats
+import matplotlib.pyplot as plt
 
 def mostrar_resultados(resultado):
     print("Resultados:")
@@ -11,26 +12,37 @@ def estadisticos(continuas, discretas):
     clasificacion = int(input("Ingrese 1 si desea Distribuciones Discretas, sino 2 para continuas: "))
     
     for sistema, muestra in (discretas.items() if clasificacion == 1 else continuas.items()):
-        distribuciones = []  # Inicializar la lista de distribuciones para cada muestra
-        
+        distribuciones = []  
         if clasificacion == 1:
-            media_varianza = np.mean(muestra) / np.var(muestra)
-            if 0.5 < media_varianza <= 1:
+            tau = np.var(muestra) / np.mean(muestra)
+            if tau == 1:
                 distribuciones.append("Poisson")
                 distribuciones.append("Triangular")
-            elif media_varianza < 1:
+            elif tau < 1:
                 distribuciones.append("Binomial") 
                 distribuciones.append("Triangular")
-            elif media_varianza > 1:
+            elif tau > 1:
                 distribuciones.append("Binomial negativa")
                 distribuciones.append("Triangular")
         else:
             coeficiente_variacion = np.std(muestra) / np.mean(muestra)
-            asimetria = stats.skew(muestra)
-            if asimetria == 0.0:
+            simetria = stats.skew(muestra)
+            if simetria == 0.0:
                 distribuciones.append("normal")
                 distribuciones.append("Triangular")
-                print ("ASIMETRIA", asimetria, sistema)
+                media = np.mean(muestra)
+                desv_estand = np.std(muestra)
+                normal = stats.norm(media, desv_estand)
+                plt.figure(figsize=(12, 6))
+                x = np.linspace(normal.ppf(0.01), normal.ppf(0.99), 100)
+                fp = normal.pdf(x)
+                plt.plot(x, fp)
+                plt.title("Distribución Normal, Sistema: " + sistema + ", Su media es " + str(media) + " y el desvío estándar es: " + str(desv_estand))
+                plt.ylabel('probabilidad')
+                plt.xlabel('valores')
+                plt.show()
+                distribuciones.append("Triangula)")
+                print(f"El sistema {sistema} tiene una simetria de {simetria}")
             elif coeficiente_variacion < 1:
                 distribuciones.append("Gamma, Weibull")
                 distribuciones.append("Triangular")
@@ -43,7 +55,7 @@ def estadisticos(continuas, discretas):
     
 
 continuas = {
-    "Restaurante": [10, 15, 20, 25, 30, 35, 40,  45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105], 
+    "Restaurante": [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105], 
     "Tienda_Clientes": [5, 10, 5, 15, 10, 5, 10, 15, 20, 10, 5, 10, 15, 20, 5, 10, 15, 20, 25, 10, 15, 20, 25, 30, 15, 20, 25, 30, 35, 20],
     "Fabrica_Equipos": [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30],
     "Tienda_Online": [2, 3, 4, 5, 6, 3, 4, 5, 6, 7, 4, 5, 6, 7, 8, 5, 6, 7, 8, 9, 6, 7, 8, 9, 10],
