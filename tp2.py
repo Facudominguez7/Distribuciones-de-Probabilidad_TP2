@@ -1,6 +1,5 @@
 import numpy as np
 from scipy import stats
-import matplotlib.pyplot as plt
 
 def mostrar_resultados(resultado):
     print("Resultados:")
@@ -30,19 +29,6 @@ def estadisticos(continuas, discretas):
             if simetria == 0.0:
                 distribuciones.append("normal")
                 distribuciones.append("Triangular")
-                media = np.mean(muestra)
-                desv_estand = np.std(muestra)
-                normal = stats.norm(media, desv_estand)
-                plt.figure(figsize=(12, 6))
-                x = np.linspace(normal.ppf(0.01), normal.ppf(0.99), 100)
-                fp = normal.pdf(x)
-                plt.plot(x, fp)
-                plt.title("Distribución Normal, Sistema: " + sistema + ", Su media es " + str(media) + " y el desvío estándar es: " + str(desv_estand))
-                plt.ylabel('probabilidad')
-                plt.xlabel('valores')
-                plt.show()
-                distribuciones.append("Triangula)")
-                print(f"El sistema {sistema} tiene una simetria de {simetria}")
             elif coeficiente_variacion < 1:
                 distribuciones.append("Gamma, Weibull")
                 distribuciones.append("Triangular")
