@@ -2,19 +2,37 @@ import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
 
-def mostrar_resultados(resultado):
+def ingresar_entero(mensaje):
+    while True:
+        try:
+            numero = int(input(mensaje))
+            return numero
+        except ValueError:
+            print("Por favor, ingrese un numero entero valido.")
+
+def mostrar_resultados(resultado, valores):
     print("Resultados:")
     for sistema, distribucion in resultado.items():
         print(f"Sistema: {sistema}, Distribución: {distribucion}")
+    print("Valores:")
+    for sistema, valores in valores.items():
+        print(f"Sistema: {sistema}, valores: {valores}")
 
 def estadisticos(continuas, discretas):
     resultado = {}
-    clasificacion = int(input("Ingrese 1 si desea Distribuciones Discretas, sino 2 para continuas: "))
+    valores_sistema = {}
+    clasificacion = ingresar_entero("Ingrese 1 si desea Distribuciones Discretas, sino 2 para continuas: ")
     
     for sistema, muestra in (discretas.items() if clasificacion == 1 else continuas.items()):
-        distribuciones = []  
+        distribuciones = []
+        valores = []  
         if clasificacion == 1:
+            media = np.mean(muestra)
+            varianza = np.var(muestra)
+            valores.append("media: " + str(media))
+            valores.append("varianza: " + str(varianza))
             tau = np.var(muestra) / np.mean(muestra)
+            valores.append("Estimación de Tau: " + str(tau))
             if tau == 1:
                 distribuciones.append("Poisson")
                 distribuciones.append("Triangular")
@@ -25,24 +43,30 @@ def estadisticos(continuas, discretas):
                 distribuciones.append("Binomial negativa")
                 distribuciones.append("Triangular")
         else:
+            desv_estand = np.std(muestra)
+            mediaa = np.mean(muestra)
             coeficiente_variacion = np.std(muestra) / np.mean(muestra)
             simetria = stats.skew(muestra)
+            valores.append("Desvío estandar: " + str(desv_estand))
+            valores.append("Media: " + str(mediaa))
+            valores.append("Coeficiente de Variación: " + str(coeficiente_variacion))
+            valores.append("Coeficiente de Simetria: " + str(simetria))
             if simetria == 0.0:
                 distribuciones.append("normal")
                 distribuciones.append("Triangular")
-                media = np.mean(muestra)
-                desv_estand = np.std(muestra)
-                normal = stats.norm(media, desv_estand)
-                plt.figure(figsize=(12, 6))
-                x = np.linspace(normal.ppf(0.01), normal.ppf(0.99), 100)
-                fp = normal.pdf(x)
-                plt.plot(x, fp)
-                plt.title("Distribución Normal, Sistema: " + sistema + ", Su media es " + str(media) + " y el desvío estándar es: " + str(desv_estand))
-                plt.ylabel('probabilidad')
-                plt.xlabel('valores')
-                plt.show()
-                distribuciones.append("Triangula)")
-                print(f"El sistema {sistema} tiene una simetria de {simetria}")
+                """
+                    media = np.mean(muestra)
+                    desv_estand = np.std(muestra)
+                     = stats.norm(media, desv_estand)
+                    plt.figure(figsize=(12, 6))
+                    x = np.linspace(normal.ppf(0.01), normal.ppf(0.99), 100)
+                     = normal.pdf(x)
+                    plt.plot(x, fp)
+                    plt.title("Distribución Normal, Sistema: " + sistema + ", Su media es " + str(media) + " y el desvío estándar es: " + str(desv_estand))
+                    .ylabel('probabilidad')
+                    plt.xlabel('valores')
+                    plt.show()
+                """
             elif coeficiente_variacion < 1:
                 distribuciones.append("Gamma, Weibull")
                 distribuciones.append("Triangular")
@@ -50,8 +74,9 @@ def estadisticos(continuas, discretas):
                 distribuciones.append("Exponencial")
                 distribuciones.append("Triangular")
         resultado[sistema] = distribuciones
+        valores_sistema[sistema] = valores
         
-    return resultado
+    return resultado, valores_sistema
     
 
 continuas = {
@@ -71,4 +96,4 @@ discretas = {
 }
 
 resultados = estadisticos(continuas, discretas)
-mostrar_resultados(resultados)
+mostrar_resultados(resultados[0], resultados[1])
